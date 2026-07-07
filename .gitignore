@@ -7,3 +7,4 @@ venv/
 *.log
 .claude/
 .vscode/
+favicon.ico

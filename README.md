@@ -31,10 +31,11 @@ Le dashboard est accessible sur `http://localhost:5000`.
 ## Architecture
 
 ```
-app.py        # Backend Flask (API REST)
-index.html    # Frontend (HTML/JS, single page)
-support.js    # Framework UI
-favicon.ico   # Icone
+app.py                      # Backend Flask (API REST)
+index.html                  # Frontend (HTML/JS, single page)
+support.js                  # Framework UI
+SKILL.md                    # Guide : enregistrer une app dans le dashboard
+systemd-user-service.md     # Skill Claude Code : creation automatisee de services
 ```
 
 ## API
@@ -59,3 +60,33 @@ Les fichiers de configuration sont stockes dans `~/.config/server_cockpit/` :
 - `hidden.json` : services masques
 
 Les services systemd utilisateur affiches sont ceux dont le fichier `.service` se trouve dans `~/.config/systemd/user/`.
+
+## Ajouter une application au dashboard
+
+Pour qu'une application apparaisse dans le dashboard, il suffit de creer un service systemd utilisateur. Le guide complet est dans [SKILL.md](SKILL.md).
+
+En resume :
+
+```bash
+# Creer le fichier service
+cat > ~/.config/systemd/user/mon-app.service << 'EOF'
+[Unit]
+Description=Mon application
+
+[Service]
+Type=simple
+WorkingDirectory=/chemin/vers/mon-app
+ExecStart=/chemin/vers/mon-app/start.sh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+
+# Activer et demarrer
+systemctl --user daemon-reload
+systemctl --user enable mon-app
+systemctl --user start mon-app
+```
+
+L'application apparait automatiquement dans le dashboard. Voir [SKILL.md](SKILL.md) pour des exemples Python, Node.js et les options avancees.
