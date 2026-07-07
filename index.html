@@ -13,41 +13,44 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap">
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    body { margin: 0; }
+    body { margin: 0; overflow-x: hidden; padding-top: env(safe-area-inset-top, 0); }
     @keyframes blink { 50% { opacity: 0; } }
     @keyframes pulseG { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); } 70% { box-shadow: 0 0 0 8px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
     @keyframes pulseY { 0% { box-shadow: 0 0 0 0 rgba(234,179,8,.6); } 70% { box-shadow: 0 0 0 8px rgba(234,179,8,0); } 100% { box-shadow: 0 0 0 0 rgba(234,179,8,0); } }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
     @keyframes toastBar { from { width: 100%; } to { width: 0%; } }
+    @media (max-width: 640px) {
+      header { padding: 10px !important; gap: 4px !important; }
+      header > div:first-child { height: auto !important; flex-direction: column !important; align-items: flex-start !important; gap: 4px !important; }
+    }
   </style>
 </helmet>
 
 <div style="min-height:100vh;background:#0F1117;color:#E2E8F0;font-family:'JetBrains Mono',monospace;font-size:13px;">
 
-  <!-- HEADER -->
-  <header style="border-bottom:1px solid #2D3448;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(15,17,23,.94);backdrop-filter:blur(8px);z-index:100;">
-    <div style="font-size:15px;font-weight:700;letter-spacing:-.5px;display:flex;align-items:center;gap:8px;">
-      <span style="color:#8697B0;">[</span>
-      <span style="color:#22C55E;">server_cockpit</span>
-      <span style="color:#8697B0;">]</span>
-      <span style="display:inline-block;width:8px;height:16px;background:#22C55E;animation:blink 1.1s step-end infinite;vertical-align:middle;"></span>
+  <!-- HEADER + NAV -->
+  <header style="border-bottom:1px solid #2D3448;padding:0 16px;display:flex;flex-direction:column;justify-content:center;gap:6px;position:sticky;top:0;background:rgba(15,17,23,.94);backdrop-filter:blur(8px);z-index:100;">
+    <div style="display:flex;align-items:center;justify-content:space-between;height:40px;">
+      <div style="font-size:15px;font-weight:700;letter-spacing:-.5px;display:flex;align-items:center;gap:8px;white-space:nowrap;">
+        <span style="color:#8697B0;">[</span>
+        <span style="color:#22C55E;">server_cockpit</span>
+        <span style="color:#8697B0;">]</span>
+        <span style="display:inline-block;width:8px;height:16px;background:#22C55E;animation:blink 1.1s step-end infinite;vertical-align:middle;"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#22C55E;animation:pulseG 2.5s ease-out infinite;flex-shrink:0;" title="Connecté"></div>
+        <div style="color:#8697B0;font-size:11px;min-width:0;">host: <span style="color:#22C55E;white-space:nowrap;">{{ hostname }}</span></div>
+        <button style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border-radius:4px;border:1px solid #2D3448;color:#8697B0;background:transparent;cursor:pointer;min-height:28px;white-space:nowrap;flex-shrink:0;" onclick="{{ refresh }}">↺ refresh</button>
+        <div style="background:#166534;color:#22C55E;border:1px solid #22C55E;border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;">↑ {{ metrics.uptime }}</div>
+      </div>
     </div>
-    <div style="display:flex;align-items:center;gap:14px;">
-      <div style="width:8px;height:8px;border-radius:50%;background:#22C55E;animation:pulseG 2.5s ease-out infinite;" title="Connecté (mode démo)"></div>
-      <div style="color:#8697B0;font-size:11px;">host: <span style="color:#22C55E;">{{ hostname }}</span></div>
-      <div style="color:#8697B0;font-size:9px;border:1px solid #2D3448;border-radius:3px;padding:2px 6px;letter-spacing:.08em;">DÉMO</div>
-      <button style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border-radius:4px;border:1px solid #2D3448;color:#8697B0;background:transparent;cursor:pointer;min-height:28px;" onclick="{{ refresh }}">↺ refresh</button>
-      <div style="background:#166534;color:#22C55E;border:1px solid #22C55E;border-radius:4px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;">↑ {{ metrics.uptime }}</div>
+    <div style="display:flex;gap:6px;padding-bottom:4px;flex-wrap:wrap;">
+      <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="4">
+        <button style="{{ item.style }}" onclick="{{ item.onClick }}">{{ item.icon }} {{ item.label }}</button>
+      </sc-for>
     </div>
   </header>
-
-  <!-- QUICK NAV -->
-  <nav style="position:sticky;top:52px;z-index:99;display:flex;gap:8px;padding:10px 24px;background:#12141C;border-bottom:1px solid #2D3448;overflow-x:auto;">
-    <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="4">
-      <button style="{{ item.style }}" onclick="{{ item.onClick }}">{{ item.icon }} {{ item.label }}</button>
-    </sc-for>
-  </nav>
 
   <main style="padding:{{ mainPadding }}px;display:flex;flex-direction:column;gap:22px;max-width:1500px;margin:0 auto;width:100%;">
 
