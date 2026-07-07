@@ -5,9 +5,6 @@ Requires: pip install flask psutil
 Run:      python app.py   (port 5000)
 
 Sécurité :
-- Mot de passe sudo demandé une fois au lancement (getpass), gardé en RAM,
-  injecté via stdin (sudo -S) → invisible dans ps aux.
-- debug/reloader désactivés : le reloader relancerait le prompt sudo.
 - Validation stricte des noms de services/scripts (anti path-traversal).
 - Suppression de raccourcis limitée aux symlinks (jamais le vrai fichier).
 
